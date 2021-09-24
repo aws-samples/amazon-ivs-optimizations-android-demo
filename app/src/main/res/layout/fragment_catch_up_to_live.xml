@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="surfaceBuffering"
+            type="Boolean"
+            android:value="true" />
+
+        <variable
+            name="infoUpdate"
+            type="com.amazon.ivs.optimizations.ui.models.InfoUpdate" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/player_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.30" />
+
+        <TextureView
+            android:id="@+id/surface_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/player_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/player_guideline" />
+
+        <ProgressBar
+            android:id="@+id/stream_buffering"
+            style="@style/ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{surfaceBuffering ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/player_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/player_guideline" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_normal"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <include
+                layout="@layout/item_pill"
+                app:leftString="@{@string/player}"
+                app:rightString="@{String.format(@string/pill_player_template, infoUpdate.playerVersion)}" />
+
+            <include
+                layout="@layout/item_pill"
+                app:leftString="@{@string/time_to_video}"
+                app:rightString="@{String.format(@string/pill_time_to_video_template, infoUpdate.timeToVideo)}" />
+
+            <include
+                layout="@layout/item_pill"
+                app:leftString="@{@string/player_speed}"
+                app:rightString="@{String.format(@string/pill_speed_template, infoUpdate.playerSpeed)}" />
+
+            <include
+                layout="@layout/item_pill"
+                app:leftString="@{@string/buffer_size}"
+                app:rightString="@{String.format(@string/pill_second_template, infoUpdate.bufferSize)}" />
+
+            <include
+                layout="@layout/item_pill"
+                app:leftString="@{@string/latency}"
+                app:pillBackground="@{infoUpdate.pillBackground}"
+                app:rightString="@{String.format(@string/pill_second_template, infoUpdate.latency)}"
+                app:useDarkText="@{true}" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

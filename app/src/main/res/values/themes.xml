@@ -1,0 +1,83 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.AmazonIVSOptimizations" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primary_bg_color</item>
+        <item name="colorPrimaryVariant">@color/primary_bg_dark_color</item>
+        <item name="colorOnPrimary">@color/primary_text_color</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/secondary_bg_color</item>
+        <item name="colorSecondaryVariant">@color/primary_text_color</item>
+        <item name="colorOnSecondary">@color/accent_color</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/primary_bg_color</item>
+        <!-- Customize your theme here. -->
+        <item name="colorControlNormal">@color/toolbar_button_color</item>
+       <item name="android:windowBackground">@color/primary_bg_color</item>
+
+    </style>
+
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <!-- Text -->
+    <style name="TextStylePrimary" parent="Theme.AmazonIVSOptimizations">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/primary_text_color</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextStyleSecondary" parent="TextStylePrimary">
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Utility -->
+    <style name="HomeButton" parent="Theme.AmazonIVSOptimizations">
+        <item name="android:theme">@style/TextStylePrimary</item>
+        <item name="android:elevation">5dp</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:background">@drawable/bg_home_button</item>
+    </style>
+
+    <style name="ProgressBar" parent="Theme.AmazonIVSOptimizations">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:indeterminateTint">@color/accent_color</item>
+    </style>
+
+    <style name="Switch" parent="Theme.AmazonIVSOptimizations">
+        <item name="trackTint">@color/track_state_list</item>
+        <item name="thumbTint">@color/thumb_state_list</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <!-- Input -->
+    <style name="PrimaryInput" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+        <item name="android:inputType">text</item>
+        <item name="errorIconDrawable">@null</item>
+        <item name="boxStrokeColor">@color/accent_color</item>
+        <item name="boxStrokeErrorColor">@color/primary_error_color</item>
+        <item name="android:textColorHint">@color/secondary_text_color</item>
+        <item name="hintTextColor">@color/secondary_text_color</item>
+        <item name="boxBackgroundColor">@color/primary_input_color</item>
+        <item name="errorTextAppearance">@style/InputError</item>
+        <item name="android:textColor">@color/primary_text_color</item>
+        <item name="android:background">@drawable/bg_input</item>
+        <item name="android:theme">@style/InputCursor</item>
+    </style>
+
+    <style name="InputCursor" parent="">
+        <item name="android:colorControlActivated">@color/primary_text_color</item>
+    </style>
+
+    <style name="InputError" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/primary_error_color</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+</resources>

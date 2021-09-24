@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/padding_normal"
+    android:paddingEnd="@dimen/padding_normal">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/title_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintGuide_percent="@dimen/title_guideline_percentage"
+        android:orientation="horizontal"/>
+
+    <TextView
+        android:id="@+id/settings_title"
+        style="@style/TextStylePrimary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_title"
+        android:textAlignment="textStart"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@id/stream_input_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/title_guideline" />
+
+    <LinearLayout
+        android:id="@+id/stream_input_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_huge"
+        android:layout_marginBottom="@dimen/margin_normal"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_title">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/custom_stream_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/custom_stream_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_normal"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/custom_stream_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/custom_stream_title"
+                    style="@style/TextStylePrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/use_custom_live_stream" />
+
+                <TextView
+                    android:id="@+id/custom_stream_subtitle"
+                    style="@style/TextStyleSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_custom_stream_subtitle" />
+
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/custom_stream_switch"
+                style="@style/Switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_normal"
+                app:layout_constraintBottom_toBottomOf="@id/custom_stream_holder"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/playback_url_container"
+            style="@style/PrimaryInput"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/margin_normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/custom_stream_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/playback_url_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/playback_url"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="@color/primary_text_color"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

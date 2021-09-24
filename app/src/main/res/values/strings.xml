@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Optimizations</string>
+    <string name="home_title">Best practises &amp; optimizations</string>
+    <string name="rebuffer_to_live">Rebuffer to Live</string>
+    <string name="time_to_video">Time to video</string>
+    <string name="catch_up_to_live">Catch up to Live</string>
+    <string name="pre_caching">Pre-caching</string>
+    <string name="close">Close</string>
+    <string name="player">Player</string>
+    <string name="buffer_size">Buffer size</string>
+    <string name="latency">Latency</string>
+    <string name="pill_player_template">Amazon IVS %1$s</string>
+    <string name="pill_second_template">%1$ss</string>
+    <string name="pill_time_to_video_template">%1$sms</string>
+    <string name="pill_speed_template">%1$sx</string>
+    <string name="player_speed">Player speed</string>
+    <string name="pre_cached">Pre-cached</string>
+    <string name="use_custom_live_stream">Use custom live stream</string>
+    <string name="settings_custom_stream_subtitle">Use your own custom Amazon IVS stream in the live demos</string>
+    <string name="playback_url">Playback URL</string>
+    <string name="settings_title">Settings</string>
+    <string name="description_settings">Settings</string>
+</resources>

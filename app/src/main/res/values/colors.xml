@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_bg_dark_color">#101010</color>
+    <color name="primary_bg_color">#100c0c</color>
+    <color name="secondary_bg_color">#1F2228</color>
+    <color name="accent_color">#F8991D</color>
+    <color name="primary_text_color">#FFFFFF</color>
+    <color name="primary_text_color_dark">#101010</color>
+    <color name="secondary_text_color">#D7D7D7</color>
+    <color name="primary_button_color">#1F2227</color>
+    <color name="snackbar_action_color">#FFF</color>
+    <color name="toolbar_button_color">#FFF</color>
+    <color name="toolbar_ripple_color">#AAFFFFFF</color>
+    <color name="pill_color">#545B64</color>
+    <color name="red_pill_color">#D33212</color>
+    <color name="orange_pill_color">#DD6b10</color>
+    <color name="light_green_pill_color">#C9F02C</color>
+    <color name="dark_green_pill_color">#5ADD43</color>
+    <color name="switch_thumb_secondary">#b3b3b4</color>
+    <color name="switch_track_secondary">#6f7073</color>
+    <color name="switch_track_primary">#704c1c</color>
+    <color name="primary_error_color">#FF002E</color>
+    <color name="primary_input_color">#282a2f</color>
+</resources>

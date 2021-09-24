@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="leftString"
+            type="String" />
+
+        <variable
+            name="rightString"
+            type="String" />
+
+        <variable
+            name="pillBackground"
+            type="Integer" />
+
+        <variable
+            name="useDarkText"
+            type="Boolean" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/pill_height"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:background="@{pillBackground > 0 ? context.getDrawable(pillBackground) : @drawable/bg_pill}"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/padding_normal"
+        android:paddingEnd="@dimen/padding_normal"
+        tools:background="@drawable/bg_pill">
+
+        <TextView
+            style="@style/TextStyleSecondary"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:gravity="center_vertical"
+            android:text="@{leftString}"
+            android:textColor="@{useDarkText ? @color/primary_text_color_dark : @color/primary_text_color}"
+            tools:text="Player" />
+
+        <TextView
+            android:id="@+id/player_version"
+            style="@style/TextStylePrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@{rightString}"
+            android:textColor="@{useDarkText ? @color/primary_text_color_dark : @color/primary_text_color}"
+            tools:text="Amazon IVS 1.2.0" />
+
+    </LinearLayout>
+
+</layout>
