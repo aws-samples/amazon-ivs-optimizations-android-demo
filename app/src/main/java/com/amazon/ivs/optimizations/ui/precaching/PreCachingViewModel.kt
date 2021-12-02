@@ -6,14 +6,12 @@ import android.net.Uri
 import android.util.Size
 import androidx.lifecycle.ViewModel
 import com.amazon.ivs.optimizations.cache.PreferenceProvider
-import com.amazon.ivs.optimizations.common.ConsumableLiveData
-import com.amazon.ivs.optimizations.common.init
-import com.amazon.ivs.optimizations.common.launchIO
-import com.amazon.ivs.optimizations.common.toDecimalSeconds
+import com.amazon.ivs.optimizations.common.*
 import com.amazon.ivs.optimizations.playerview.PlayerView
 import com.amazon.ivs.optimizations.ui.models.*
 import com.amazonaws.ivs.player.Player
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asSharedFlow
 import timber.log.Timber
 import java.util.*
 
@@ -21,20 +19,26 @@ class PreCachingViewModel(private val preferences: PreferenceProvider) : ViewMod
 
     private lateinit var playerListener: Player.Listener
     private var timeToVideo: Int? = null
+    private val _onSizeChanged = ConsumableSharedFlow<Size>(canReplay = true)
+    private val _onInfoUpdate = ConsumableSharedFlow<InfoUpdate>(canReplay = true)
+    private val _onBuffering = ConsumableSharedFlow<Boolean>()
+    private val _onError = ConsumableSharedFlow<Error>()
+
+    val onSizeChanged = _onSizeChanged.asSharedFlow()
+    val onInfoUpdate = _onInfoUpdate.asSharedFlow()
+    val onBuffering = _onBuffering.asSharedFlow()
+    val onError = _onError.asSharedFlow()
+    val currentSize get() = _onSizeChanged.replayCache.lastOrNull()
 
     @SuppressLint("StaticFieldLeak")
     var playerView: PlayerView? = null
-    val onSizeChanged = ConsumableLiveData<Size>()
-    val onBuffering = ConsumableLiveData<Boolean>()
-    val onError = ConsumableLiveData<Error>()
-    val onInfoUpdate = ConsumableLiveData<InfoUpdate>()
 
     fun initPlayer(context: Context, playbackUrl: String?) {
         if (playerView != null) {
             playerView?.player?.load(Uri.parse(playbackUrl ?: STREAM_URI))
             return
         }
-        onBuffering.postConsumable(true)
+        _onBuffering.tryEmit(true)
 
         playerView = PlayerView(context).apply {
             Timber.d("Initializing player and calling load()")
@@ -42,21 +46,21 @@ class PreCachingViewModel(private val preferences: PreferenceProvider) : ViewMod
             setControlsEnabled(false)
             playerListener = player.init(
                 { videoSizeState ->
-                    onSizeChanged.postConsumable(videoSizeState)
+                    _onSizeChanged.tryEmit(videoSizeState)
                 },
                 { state ->
                     when (state) {
                         Player.State.BUFFERING -> {
-                            onBuffering.postConsumable(true)
+                            _onBuffering.tryEmit(true)
                         }
                         Player.State.READY -> {
                             player.qualities.firstOrNull { it.name == MAX_QUALITY }?.let { quality ->
                                 player.setAutoMaxQuality(quality)
                             }
-                            onBuffering.postConsumable(false)
+                            _onBuffering.tryEmit(false)
                         }
                         Player.State.PLAYING -> {
-                            onBuffering.postConsumable(false)
+                            _onBuffering.tryEmit(false)
                             if (timeToVideo == null) {
                                 timeToVideo = (Date().time - preferences.capturedClickTime).toInt()
                             }
@@ -65,7 +69,7 @@ class PreCachingViewModel(private val preferences: PreferenceProvider) : ViewMod
                     }
                 },
                 { exception ->
-                    onError.postConsumable(exception)
+                    _onError.tryEmit(exception)
                 }
             )
         }
@@ -76,7 +80,7 @@ class PreCachingViewModel(private val preferences: PreferenceProvider) : ViewMod
         if (playerView == null) return
         launchIO {
             playerView?.let { playerView ->
-                onInfoUpdate.postConsumable(
+                _onInfoUpdate.tryEmit(
                     InfoUpdate(
                         playerView.player.version,
                         (playerView.player.bufferedPosition - playerView.player.position).toDecimalSeconds(),

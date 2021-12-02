@@ -81,13 +81,13 @@ fun TextureView.onReady(onReady: (surface: Surface) -> Unit) = launchMain {
 
 private fun TextureView.waitForSurface() = channelFlow {
     if (surfaceTexture != null) {
-        offer(Surface(surfaceTexture))
+        trySend(Surface(surfaceTexture))
         return@channelFlow
     }
     surfaceTextureListener = object : TextureView.SurfaceTextureListener {
         override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
             surfaceTextureListener = null
-            offer(Surface(surfaceTexture))
+            trySend(Surface(surfaceTexture))
         }
 
         override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
