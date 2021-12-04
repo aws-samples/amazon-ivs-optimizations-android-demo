@@ -15,6 +15,7 @@ import com.amazon.ivs.optimizations.databinding.FragmentRebufferToLiveBinding
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_COUNT
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_DELAY
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import java.util.*
 
 class RebufferToLiveFragment : Fragment() {
@@ -38,21 +39,29 @@ class RebufferToLiveFragment : Fragment() {
         setBackButtonAvailable()
         preferences.capturedClickTime = Date().time
 
-        viewModel.onInfoUpdate.observeConsumable(this) { infoUpdate ->
-            binding.infoUpdate = infoUpdate
+        launchUI {
+            viewModel.onInfoUpdate.collect { infoUpdate ->
+                binding.infoUpdate = infoUpdate
+            }
         }
 
-        viewModel.onBuffering.observeConsumable(viewLifecycleOwner) { bufferingState ->
-            binding.surfaceBuffering = bufferingState
+        launchUI {
+            viewModel.onBuffering.collect { bufferingState ->
+                binding.surfaceBuffering = bufferingState
+            }
         }
 
-        viewModel.onError.observeConsumable(viewLifecycleOwner) { error ->
-            binding.root.showSnackBar(error.errorMessage)
+        launchUI {
+            viewModel.onError.collect { error ->
+                binding.root.showSnackBar(error.errorMessage)
+            }
         }
 
-        viewModel.onSizeChanged.observeConsumable(viewLifecycleOwner) { videoSizeState ->
-            binding.surfaceView.onReady {
-                binding.surfaceView.scaleToFit(videoSizeState)
+        launchUI {
+            viewModel.onSizeChanged.collect { videoSizeState ->
+                binding.surfaceView.onReady {
+                    binding.surfaceView.scaleToFit(videoSizeState)
+                }
             }
         }
     }
@@ -71,7 +80,7 @@ class RebufferToLiveFragment : Fragment() {
             repeat(MEASURE_REPEAT_COUNT) {
                 binding.surfaceView.doOnLayout {
                     binding.surfaceView.onReady {
-                        viewModel.onSizeChanged.consumedValue?.let { videoSizeState ->
+                        viewModel.currentSize?.let { videoSizeState ->
                             binding.surfaceView.scaleToFit(videoSizeState)
                         }
                     }
@@ -91,10 +100,5 @@ class RebufferToLiveFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         viewModel.release()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.onError.consume()
     }
 }

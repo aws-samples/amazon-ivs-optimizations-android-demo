@@ -16,6 +16,7 @@ import com.amazon.ivs.optimizations.databinding.FragmentPreCachingBinding
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_COUNT
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_DELAY
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import java.util.*
 
 class PreCachingFragment : Fragment() {
@@ -47,20 +48,28 @@ class PreCachingFragment : Fragment() {
         params.topToTop = binding.playerGuideline.id
         viewModel.playerView?.layoutParams = params
 
-        viewModel.onInfoUpdate.observeConsumable(this) { infoUpdate ->
-            binding.infoUpdate = infoUpdate
+        launchUI {
+            viewModel.onInfoUpdate.collect { infoUpdate ->
+                binding.infoUpdate = infoUpdate
+            }
         }
 
-        viewModel.onBuffering.observeConsumable(viewLifecycleOwner) { bufferingState ->
-            binding.surfaceBuffering = bufferingState
+        launchUI {
+            viewModel.onBuffering.collect { bufferingState ->
+                binding.surfaceBuffering = bufferingState
+            }
         }
 
-        viewModel.onError.observeConsumable(viewLifecycleOwner) { error ->
-            binding.root.showSnackBar(error.errorMessage)
+        launchUI {
+            viewModel.onError.collect { error ->
+                binding.root.showSnackBar(error.errorMessage)
+            }
         }
 
-        viewModel.onSizeChanged.observeConsumable(viewLifecycleOwner) { videoSizeState ->
-            viewModel.playerView?.surfaceView?.scaleToFit(videoSizeState, binding.streamContainer)
+        launchUI {
+            viewModel.onSizeChanged.collect { videoSizeState ->
+                viewModel.playerView?.surfaceView?.scaleToFit(videoSizeState, binding.streamContainer)
+            }
         }
     }
 
@@ -77,7 +86,7 @@ class PreCachingFragment : Fragment() {
         launchMain {
             repeat(MEASURE_REPEAT_COUNT) {
                 binding.streamContainer.doOnLayout {
-                    viewModel.onSizeChanged.consumedValue?.let { videoSizeState ->
+                    viewModel.currentSize?.let { videoSizeState ->
                         viewModel.playerView?.surfaceView?.scaleToFit(videoSizeState, binding.streamContainer)
                     }
                 }
@@ -90,10 +99,5 @@ class PreCachingFragment : Fragment() {
         super.onDestroy()
         viewModel.release()
         binding.streamContainer.removeAllViews()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.onError.consume()
     }
 }

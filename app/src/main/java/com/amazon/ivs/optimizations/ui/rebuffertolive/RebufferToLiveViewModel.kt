@@ -6,14 +6,12 @@ import android.util.Size
 import android.view.Surface
 import androidx.lifecycle.ViewModel
 import com.amazon.ivs.optimizations.cache.PreferenceProvider
-import com.amazon.ivs.optimizations.common.ConsumableLiveData
-import com.amazon.ivs.optimizations.common.init
-import com.amazon.ivs.optimizations.common.launchIO
-import com.amazon.ivs.optimizations.common.toDecimalSeconds
+import com.amazon.ivs.optimizations.common.*
 import com.amazon.ivs.optimizations.ui.models.*
 import com.amazonaws.ivs.player.MediaPlayer
 import com.amazonaws.ivs.player.Player
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asSharedFlow
 import timber.log.Timber
 import java.util.*
 
@@ -22,23 +20,28 @@ class RebufferToLiveViewModel(private val preferences: PreferenceProvider) : Vie
     private lateinit var playerListener: Player.Listener
     private var player: MediaPlayer? = null
     private var timeToVideo: Int? = null
+    private val _onSizeChanged = ConsumableSharedFlow<Size>(canReplay = true)
+    private val _onInfoUpdate = ConsumableSharedFlow<InfoUpdate>(canReplay = true)
+    private val _onBuffering = ConsumableSharedFlow<Boolean>()
+    private val _onError = ConsumableSharedFlow<Error>()
 
-    val onSizeChanged = ConsumableLiveData<Size>()
-    val onBuffering = ConsumableLiveData<Boolean>()
-    val onError = ConsumableLiveData<Error>()
-    val onInfoUpdate = ConsumableLiveData<InfoUpdate>()
+    val onSizeChanged = _onSizeChanged.asSharedFlow()
+    val onInfoUpdate = _onInfoUpdate.asSharedFlow()
+    val onBuffering = _onBuffering.asSharedFlow()
+    val onError = _onError.asSharedFlow()
+    val currentSize get() = _onSizeChanged.replayCache.lastOrNull()
 
     fun initPlayers(context: Context, surface: Surface, playbackUrl: String?) {
-        onBuffering.postConsumable(true)
+        _onBuffering.tryEmit(true)
         player = MediaPlayer(context)
         playerListener = player!!.init(
             { videoSizeState ->
-                onSizeChanged.postConsumable(videoSizeState)
+                _onSizeChanged.tryEmit(videoSizeState)
             },
             { state ->
                 when (state) {
                     Player.State.BUFFERING -> {
-                        onBuffering.postConsumable(true)
+                        _onBuffering.tryEmit(true)
                     }
                     Player.State.READY -> {
                         player?.qualities?.firstOrNull { it.name == MAX_QUALITY }?.let { quality ->
@@ -46,7 +49,7 @@ class RebufferToLiveViewModel(private val preferences: PreferenceProvider) : Vie
                         }
                     }
                     Player.State.PLAYING -> {
-                        onBuffering.postConsumable(false)
+                        _onBuffering.tryEmit(false)
                         if (timeToVideo == null) {
                             timeToVideo = (Date().time - preferences.capturedClickTime).toInt()
                         }
@@ -55,7 +58,7 @@ class RebufferToLiveViewModel(private val preferences: PreferenceProvider) : Vie
                 }
             },
             { exception ->
-                onError.postConsumable(exception)
+                _onError.tryEmit(exception)
             }
         )
 
@@ -70,7 +73,7 @@ class RebufferToLiveViewModel(private val preferences: PreferenceProvider) : Vie
         if (player == null) return
         launchIO {
             player?.let { mediaPlayer ->
-                onInfoUpdate.postConsumable(
+                _onInfoUpdate.tryEmit(
                     InfoUpdate(
                         mediaPlayer.version,
                         (mediaPlayer.bufferedPosition - mediaPlayer.position).toDecimalSeconds(),

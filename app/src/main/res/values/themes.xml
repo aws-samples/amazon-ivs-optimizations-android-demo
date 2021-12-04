@@ -1,20 +1,15 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<resources>
     <style name="Theme.AmazonIVSOptimizations" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary_bg_color</item>
         <item name="colorPrimaryVariant">@color/primary_bg_dark_color</item>
         <item name="colorOnPrimary">@color/primary_text_color</item>
-        <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/secondary_bg_color</item>
         <item name="colorSecondaryVariant">@color/primary_text_color</item>
         <item name="colorOnSecondary">@color/accent_color</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/primary_bg_color</item>
-        <!-- Customize your theme here. -->
+        <item name="android:statusBarColor">@color/primary_bg_color</item>
+        <item name="android:navigationBarColor">@color/primary_bg_color</item>
         <item name="colorControlNormal">@color/toolbar_button_color</item>
        <item name="android:windowBackground">@color/primary_bg_color</item>
-
     </style>
 
     <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
