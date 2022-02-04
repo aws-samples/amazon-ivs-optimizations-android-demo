@@ -15,7 +15,6 @@ import com.amazon.ivs.optimizations.databinding.FragmentRebufferToLiveBinding
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_COUNT
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_DELAY
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import java.util.*
 
 class RebufferToLiveFragment : Fragment() {
