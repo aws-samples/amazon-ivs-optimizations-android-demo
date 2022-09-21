@@ -1,6 +1,7 @@
 package com.amazon.ivs.optimizations.ui
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -54,22 +55,24 @@ class MainActivity : AppCompatActivity() {
         binding.toolbarSettings.setOnClickListener {
             openFragment(R.id.navigation_settings)
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                getCurrentFragment()?.let { currentFragment ->
+                    when (currentFragment) {
+                        is HomeFragment -> finish()
+                        is SettingsFragment -> validateUrl()
+                    }
+                    if (currentFragment is HomeFragment) finish()
+                    findNavController(R.id.nav_host_fragment).popBackStack(R.id.navigation_home, false)
+                }
+            }
+        })
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
         return true
-    }
-
-    override fun onBackPressed() {
-        getCurrentFragment()?.let { currentFragment ->
-            when (currentFragment) {
-                is HomeFragment -> finish()
-                is SettingsFragment -> validateUrl()
-            }
-            if (currentFragment is HomeFragment) finish()
-            findNavController(R.id.nav_host_fragment).popBackStack(R.id.navigation_home, false)
-        }
     }
 
     private fun validateUrl() {
