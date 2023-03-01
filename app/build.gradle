@@ -28,11 +28,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
         freeCompilerArgs += [
                 "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi",
@@ -45,16 +45,16 @@ android {
 dependencies {
     // Android
     api 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'com.google.android.material:material:1.8.0'
 
     // Navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
 
     // Amazon
-    implementation 'com.amazonaws:ivs-player:1.16.0'
+    implementation 'com.amazonaws:ivs-player:1.17.0'
 
     // Coroutines
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
