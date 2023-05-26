@@ -7,21 +7,22 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.amazon.ivs.optimizations.R
-import com.amazon.ivs.optimizations.cache.PREFERENCES_NAME
 import com.amazon.ivs.optimizations.cache.PreferenceProvider
 import com.amazon.ivs.optimizations.common.hideKeyboard
 import com.amazon.ivs.optimizations.common.setVisible
 import com.amazon.ivs.optimizations.common.showKeyboard
 import com.amazon.ivs.optimizations.databinding.FragmentSettingsBinding
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 const val IVS_PLAYBACK_URL_BASE = "live-video.net"
 
+@AndroidEntryPoint
 class SettingsFragment : Fragment() {
-
     private lateinit var binding: FragmentSettingsBinding
-    private val preferences by lazy {
-        PreferenceProvider(requireContext(), PREFERENCES_NAME)
-    }
+
+    @Inject
+    lateinit var preferences: PreferenceProvider
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentSettingsBinding.inflate(layoutInflater)

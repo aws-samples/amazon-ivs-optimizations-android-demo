@@ -5,16 +5,15 @@ import com.amazon.ivs.optimizations.ui.settings.IVS_PLAYBACK_URL_BASE
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-const val PREFERENCES_NAME = "app_preferences"
+private const val PREFERENCES_NAME = "app_preferences"
 
-class PreferenceProvider(context: Context, preferencesName: String) {
-
+class PreferenceProvider(context: Context) {
     var capturedClickTime by longPreference()
     var useCustomUrl by booleanPreference()
     var customLiveStreamUrl by stringPreference()
     val playbackUrl get() = customLiveStreamUrl.takeIf { useCustomUrl && customLiveStreamUrl?.contains(IVS_PLAYBACK_URL_BASE) == true }
 
-    private val sharedPreferences by lazy { context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE) }
+    private val sharedPreferences by lazy { context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE) }
 
     private fun longPreference() = object : ReadWriteProperty<Any?, Long?> {
 

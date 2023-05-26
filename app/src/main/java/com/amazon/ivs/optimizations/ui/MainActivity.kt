@@ -7,7 +7,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.amazon.ivs.optimizations.R
-import com.amazon.ivs.optimizations.cache.PREFERENCES_NAME
 import com.amazon.ivs.optimizations.cache.PreferenceProvider
 import com.amazon.ivs.optimizations.common.getCurrentFragment
 import com.amazon.ivs.optimizations.common.openFragment
@@ -16,14 +15,16 @@ import com.amazon.ivs.optimizations.databinding.ActivityMainBinding
 import com.amazon.ivs.optimizations.ui.home.HomeFragment
 import com.amazon.ivs.optimizations.ui.settings.IVS_PLAYBACK_URL_BASE
 import com.amazon.ivs.optimizations.ui.settings.SettingsFragment
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private val preferences by lazy {
-        PreferenceProvider(this, PREFERENCES_NAME)
-    }
+
+    @Inject
+    lateinit var preferences: PreferenceProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

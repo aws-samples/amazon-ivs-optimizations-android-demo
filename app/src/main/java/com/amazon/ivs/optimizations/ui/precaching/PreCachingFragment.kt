@@ -8,26 +8,18 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
-import com.amazon.ivs.optimizations.App
-import com.amazon.ivs.optimizations.cache.PREFERENCES_NAME
-import com.amazon.ivs.optimizations.cache.PreferenceProvider
+import androidx.fragment.app.activityViewModels
 import com.amazon.ivs.optimizations.common.*
 import com.amazon.ivs.optimizations.databinding.FragmentPreCachingBinding
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_COUNT
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_DELAY
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import java.util.*
 
+@AndroidEntryPoint
 class PreCachingFragment : Fragment() {
-
     private lateinit var binding: FragmentPreCachingBinding
-    private val viewModel by lazyViewModel(
-        { requireActivity().application as App },
-        { PreCachingViewModel(preferences) }
-    )
-    private val preferences by lazy {
-        PreferenceProvider(requireContext(), PREFERENCES_NAME)
-    }
+    private val viewModel by activityViewModels<PreCachingViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentPreCachingBinding.inflate(layoutInflater)
@@ -37,7 +29,7 @@ class PreCachingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setBackButtonAvailable()
-        preferences.capturedClickTime = Date().time
+        viewModel.captureClickTime()
 
         binding.streamContainer.addView(viewModel.playerView, 0)
         val params = viewModel.playerView?.layoutParams as ConstraintLayout.LayoutParams

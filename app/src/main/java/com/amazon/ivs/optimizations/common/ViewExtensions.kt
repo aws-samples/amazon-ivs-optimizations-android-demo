@@ -18,7 +18,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
-import java.util.*
 import kotlin.math.roundToInt
 
 fun TextInputEditText.showKeyboard() {

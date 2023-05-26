@@ -7,26 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
-import com.amazon.ivs.optimizations.App
-import com.amazon.ivs.optimizations.cache.PREFERENCES_NAME
-import com.amazon.ivs.optimizations.cache.PreferenceProvider
+import androidx.fragment.app.activityViewModels
 import com.amazon.ivs.optimizations.common.*
 import com.amazon.ivs.optimizations.databinding.FragmentRebufferToLiveBinding
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_COUNT
 import com.amazon.ivs.optimizations.ui.models.MEASURE_REPEAT_DELAY
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import java.util.*
 
+@AndroidEntryPoint
 class RebufferToLiveFragment : Fragment() {
-
     private lateinit var binding: FragmentRebufferToLiveBinding
-    private val viewModel by lazyViewModel(
-        { requireActivity().application as App },
-        { RebufferToLiveViewModel(preferences) }
-    )
-    private val preferences by lazy {
-        PreferenceProvider(requireContext(), PREFERENCES_NAME)
-    }
+    private val viewModel by activityViewModels<RebufferToLiveViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentRebufferToLiveBinding.inflate(layoutInflater)
@@ -36,31 +28,23 @@ class RebufferToLiveFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setBackButtonAvailable()
-        preferences.capturedClickTime = Date().time
+        viewModel.captureClickTime()
 
-        launchUI {
-            viewModel.onInfoUpdate.collect { infoUpdate ->
-                binding.infoUpdate = infoUpdate
-            }
+        collect(viewModel.onInfoUpdate) { infoUpdate ->
+            binding.infoUpdate = infoUpdate
         }
 
-        launchUI {
-            viewModel.onBuffering.collect { bufferingState ->
-                binding.surfaceBuffering = bufferingState
-            }
+        collect(viewModel.onBuffering) { bufferingState ->
+            binding.surfaceBuffering = bufferingState
         }
 
-        launchUI {
-            viewModel.onError.collect { error ->
-                binding.root.showSnackBar(error.errorMessage)
-            }
+        collect(viewModel.onError) { error ->
+            binding.root.showSnackBar(error.errorMessage)
         }
 
-        launchUI {
-            viewModel.onSizeChanged.collect { videoSizeState ->
-                binding.surfaceView.onReady {
-                    binding.surfaceView.scaleToFit(videoSizeState)
-                }
+        collect(viewModel.onSizeChanged) { videoSizeState ->
+            binding.surfaceView.onReady {
+                binding.surfaceView.scaleToFit(videoSizeState)
             }
         }
     }
@@ -75,7 +59,7 @@ class RebufferToLiveFragment : Fragment() {
             binding.playerGuideline.setGuidelinePercent(0.3f)
         }
 
-        launchMain {
+        launchUI {
             repeat(MEASURE_REPEAT_COUNT) {
                 binding.surfaceView.doOnLayout {
                     binding.surfaceView.onReady {
@@ -92,7 +76,7 @@ class RebufferToLiveFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         binding.surfaceView.onReady { surface ->
-            viewModel.initPlayers(requireContext(), surface, preferences.playbackUrl)
+            viewModel.initPlayers(requireContext(), surface)
         }
     }
 

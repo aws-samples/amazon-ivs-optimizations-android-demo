@@ -5,25 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.amazon.ivs.optimizations.App
+import androidx.fragment.app.activityViewModels
 import com.amazon.ivs.optimizations.R
-import com.amazon.ivs.optimizations.cache.PREFERENCES_NAME
-import com.amazon.ivs.optimizations.cache.PreferenceProvider
-import com.amazon.ivs.optimizations.common.lazyViewModel
 import com.amazon.ivs.optimizations.common.openFragment
 import com.amazon.ivs.optimizations.databinding.FragmentHomeBinding
 import com.amazon.ivs.optimizations.ui.precaching.PreCachingViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
-
     private lateinit var binding: FragmentHomeBinding
-    private val preferences by lazy {
-        PreferenceProvider(requireContext(), PREFERENCES_NAME)
-    }
-    private val viewModel by lazyViewModel(
-        { requireActivity().application as App },
-        { PreCachingViewModel(preferences) }
-    )
+    private val viewModel by activityViewModels<PreCachingViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentHomeBinding.inflate(layoutInflater)
@@ -49,6 +41,6 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.initPlayer(requireContext(), preferences.playbackUrl)
+        viewModel.initPlayer(requireContext())
     }
 }

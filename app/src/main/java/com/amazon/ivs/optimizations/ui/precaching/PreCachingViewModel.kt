@@ -10,39 +10,46 @@ import com.amazon.ivs.optimizations.common.*
 import com.amazon.ivs.optimizations.playerview.PlayerView
 import com.amazon.ivs.optimizations.ui.models.*
 import com.amazonaws.ivs.player.Player
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
 
-class PreCachingViewModel(private val preferences: PreferenceProvider) : ViewModel() {
-
+@HiltViewModel
+class PreCachingViewModel @Inject constructor(
+    private val preferences: PreferenceProvider,
+) : ViewModel() {
     private lateinit var playerListener: Player.Listener
     private var timeToVideo: Int? = null
-    private val _onSizeChanged = ConsumableSharedFlow<Size>(canReplay = true)
-    private val _onInfoUpdate = ConsumableSharedFlow<InfoUpdate>(canReplay = true)
-    private val _onBuffering = ConsumableSharedFlow<Boolean>()
-    private val _onError = ConsumableSharedFlow<Error>()
+    private val _onSizeChanged = MutableSharedFlow<Size>(replay = 1)
+    private val _onInfoUpdate = Channel<InfoUpdate>()
+    private val _onBuffering = Channel<Boolean>()
+    private val _onError = Channel<Error>()
 
     val onSizeChanged = _onSizeChanged.asSharedFlow()
-    val onInfoUpdate = _onInfoUpdate.asSharedFlow()
-    val onBuffering = _onBuffering.asSharedFlow()
-    val onError = _onError.asSharedFlow()
+    val onInfoUpdate = _onInfoUpdate.receiveAsFlow()
+    val onBuffering = _onBuffering.receiveAsFlow()
+    val onError = _onError.receiveAsFlow()
     val currentSize get() = _onSizeChanged.replayCache.lastOrNull()
 
     @SuppressLint("StaticFieldLeak")
     var playerView: PlayerView? = null
 
-    fun initPlayer(context: Context, playbackUrl: String?) {
+    fun initPlayer(context: Context) {
         if (playerView != null) {
-            playerView?.player?.load(Uri.parse(playbackUrl ?: STREAM_URI))
+            playerView?.player?.load(Uri.parse(preferences.playbackUrl ?: STREAM_URI))
             return
         }
-        _onBuffering.tryEmit(true)
+        _onBuffering.trySend(true)
 
         playerView = PlayerView(context).apply {
             Timber.d("Initializing player and calling load()")
-            player.load(Uri.parse(playbackUrl ?: STREAM_URI))
+            player.load(Uri.parse(preferences.playbackUrl ?: STREAM_URI))
             setControlsEnabled(false)
             playerListener = player.init(
                 { videoSizeState ->
@@ -51,16 +58,16 @@ class PreCachingViewModel(private val preferences: PreferenceProvider) : ViewMod
                 { state ->
                     when (state) {
                         Player.State.BUFFERING -> {
-                            _onBuffering.tryEmit(true)
+                            _onBuffering.trySend(true)
                         }
                         Player.State.READY -> {
                             player.qualities.firstOrNull { it.name == MAX_QUALITY }?.let { quality ->
                                 player.setAutoMaxQuality(quality)
                             }
-                            _onBuffering.tryEmit(false)
+                            _onBuffering.trySend(false)
                         }
                         Player.State.PLAYING -> {
-                            _onBuffering.tryEmit(false)
+                            _onBuffering.trySend(false)
                             if (timeToVideo == null) {
                                 timeToVideo = (Date().time - preferences.capturedClickTime).toInt()
                             }
@@ -69,7 +76,7 @@ class PreCachingViewModel(private val preferences: PreferenceProvider) : ViewMod
                     }
                 },
                 { exception ->
-                    _onError.tryEmit(exception)
+                    _onError.trySend(exception)
                 }
             )
         }
@@ -80,7 +87,7 @@ class PreCachingViewModel(private val preferences: PreferenceProvider) : ViewMod
         if (playerView == null) return
         launchIO {
             playerView?.let { playerView ->
-                _onInfoUpdate.tryEmit(
+                _onInfoUpdate.trySend(
                     InfoUpdate(
                         playerView.player.version,
                         (playerView.player.bufferedPosition - playerView.player.position).toDecimalSeconds(),
@@ -105,5 +112,9 @@ class PreCachingViewModel(private val preferences: PreferenceProvider) : ViewMod
         playerView?.player?.release()
         playerView = null
         timeToVideo = null
+    }
+
+    fun captureClickTime() {
+        preferences.capturedClickTime = Date().time
     }
 }
