@@ -2,9 +2,10 @@ package com.amazon.ivs.optimizations.common
 
 import timber.log.Timber
 
+private const val TIMBER_TAG = "IVS Best Practices"
 
-class LineNumberDebugTree(private val tag: String) : Timber.DebugTree() {
+class LineNumberDebugTree : Timber.DebugTree() {
 
     override fun createStackElementTag(element: StackTraceElement) =
-        "$tag: (${element.fileName}:${element.lineNumber}) #${element.methodName} "
+        "$TIMBER_TAG: (${element.fileName}:${element.lineNumber}) #${element.methodName} "
 }

@@ -23,7 +23,6 @@ import com.amazonaws.ivs.player.PlayerControlView
  * for display.
  */
 class PlayerView : FrameLayout, SurfaceHolder.Callback, View.OnAttachStateChangeListener, View.OnLayoutChangeListener {
-
     lateinit var player: Player
     lateinit var surfaceView: SurfaceView
     private lateinit var captionsView: TextView
